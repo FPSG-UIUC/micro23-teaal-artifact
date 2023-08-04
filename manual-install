@@ -1,0 +1,4 @@
+#!/bin/sh
+
+docker-compose exec labs python3 -m pip install /src/fibertree
+docker-compose exec labs python3 -m pip install /src/teaal-compiler
