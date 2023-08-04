@@ -39,7 +39,7 @@ services:
       - ./scripts:/home/workspace/scripts
       - ./yamls:/home/workspace/yamls
     environment:
-      # - USER_UID=2001
-      # - USER_GID=2001
+      - USER_UID=2001
+      - USER_GID=2001
 #      - JUPYTER_SWITCHES=--NotebookApp.token=''
       - JUPYTER_SWITCHES=--LabApp.token=''
