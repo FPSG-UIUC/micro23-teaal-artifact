@@ -2,6 +2,7 @@ import os
 
 from fibertree import Metrics, Tensor
 from fibertree.model import Compute, Format, Traffic
+from fibertree.model.intersect import SkipAheadIntersector
 
 from teaal.parse import Einsum as EinsumParser
 from teaal.parse import Mapping as MappingParser
@@ -10,16 +11,21 @@ from teaal.parse import Bindings as BindingsParser
 from teaal.parse import Format as FormatParser
 from teaal.trans.hifiber import HiFiber
 
-def run_outerspace(A_KM, B_KN):
+def run_extensor(A_KM, B_KN, M1, K1, N1, pe_sz):
     assert A_KM.getRankIds() == ["K", "M"]
     assert B_KN.getRankIds() == ["K", "N"]
 
+    M1 = M1 * pe_sz
+    N1 = N1 * pe_sz
+    K1 = K1 * pe_sz
+    M0 = pe_sz
+    N0 = pe_sz
+    K0 = pe_sz
+
     K, M = A_KM.getShape()
     K, N = B_KN.getShape()
-    A_KM.setFormat("K", "U")
-    B_KN.setFormat("K", "U")
 
-    fname = "../yamls/outerspace.yaml"
+    fname = "../yamls/extensor.yaml"
     einsum = EinsumParser.from_file(fname)
     mapping = MappingParser.from_file(fname)
     arch = ArchitectureParser.from_file(fname)
@@ -31,12 +37,9 @@ def run_outerspace(A_KM, B_KN):
 
     exec(str(HiFiber(einsum, mapping, arch, bindings, format_)), globals(), locals())
 
-    A_KM.setFormat("K", "C")
-    B_KN.setFormat("K", "C")
-
     return locals()["metrics"]
 
-def check_outerspace(metrics):
-    corr = {'T0': {'MainMemory': {'B': {'read': 2368}, 'A': {'read': 1664}}, 'FPMul': {'mul': 46}}, 'T1': {'MainMemory': {'T0': {'read': 5184}, 'T1': {'read': 0, 'write': 5184}}}, 'Z': {'MainMemory': {'Z': {'read': 0, 'write': 3456}}, 'SortHW': {'T1_MKN': 71}, 'FPAdd': {'add': 13}}}
+def check_extensor(metrics):
+    corr = {'Z': {'MainMemory': {'A': {'read': 7296}, 'B': {'read': 6464}, 'Z': {'read': 2560, 'write': 6912}}, 'FPMul': {'mul': 46}, 'FPAdd': {'add': 13}, 'K2Intersect': 4, 'K1Intersect': 39, 'K0Intersection': 84}}
 
     print("Expected metrics:", metrics == corr)

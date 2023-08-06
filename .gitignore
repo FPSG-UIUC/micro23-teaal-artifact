@@ -33,3 +33,4 @@
 
 venv/
 notebooks/tmp/*
+*.swp
