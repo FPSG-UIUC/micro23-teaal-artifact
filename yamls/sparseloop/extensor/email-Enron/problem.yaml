@@ -1,0 +1,35 @@
+problem:
+  shape:
+    name: MatrixMultiply
+    dimensions: [ M, N, K ]
+    data-spaces:
+      - name: A
+        projection:
+          - [ [ M ] ]
+          - [ [ K ] ]
+
+      - name: B
+        projection:
+          - [ [ N ] ]
+          - [ [ K ] ]
+
+      - name: Z
+        projection:
+          - [ [ M ] ]
+          - [ [ N ] ]
+        read-write: True
+
+  instance:
+    M: 36736 #36692 
+    K: 36736 #36692
+    N: 36736 #36692
+    densities:
+      A:
+        distribution: hypergeometric
+        density: 0.000273
+      B:
+        distribution: hypergeometric
+        density: 0.00027309
+      Z:
+        distribution: hypergeometric
+        density: 0.02265

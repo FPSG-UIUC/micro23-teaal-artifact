@@ -1,0 +1,35 @@
+mapping:
+- target: MainMemory
+  type: temporal
+  factors: M=2 K=2 N=2
+  permutation: MKN
+
+- target: MainMemory
+  type: bypass
+  keep: [A, B, Z]
+  bypass: []
+
+- target: LLB
+  type: temporal
+  factors: K=1 N=53 M=53
+  permutation: KNM
+
+- target: LLB
+  type: spatial
+  factors: K=53 N=1 M=1
+  permutation: KNM
+
+- target: LLB
+  type: bypass
+  keep: [A, B, Z]
+  bypass: []
+
+- target: PEB
+  type: temporal
+  factors: K=128 N=128 M=128
+  permutation: KNM
+
+- target: PEB
+  type: bypass
+  keep: [A, B, Z]
+  bypass: []

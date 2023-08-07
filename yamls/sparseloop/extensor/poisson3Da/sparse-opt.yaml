@@ -1,0 +1,169 @@
+sparse_optimizations:
+  targets:
+
+    - name: MainMemory
+      representation-format:
+        data-spaces:
+          - name: A
+            ranks:           # no tiling on A, so two ranks needed
+            #### M2, K2
+              - format: CP   # M2, K2 --> MainMemory, contains 2 tiles.
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP   # M2, K2 --> MainMemory, contains 2 tiles.
+                metadata-word-bits: 0
+                payload-word-bits: 0
+
+              ##### M1, K1, COO
+              - format: CP    # M1, K1 --> LLB, flattened, 12 tiles of 128;
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # M1, K1 --> LLB, flattened, 12 tiles of 128;
+                metadata-word-bits: 64
+                payload-word-bits: 0
+
+              #### M0, K0, CSF
+              - format: CP    # M0 --> PEB,  128 coordinates, CSF format
+                metadata-word-bits: 32
+                payload-word-bits: 32
+              - format: CP    # K0 --> PEB,  128 coordinates, points to data
+                metadata-word-bits: 32
+                payload-word-bits: 64
+
+          - name: B
+            ranks:
+              #### N2, K2
+              - format: CP    # N2
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # K2
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              #### N1, K1
+              - format: CP    # N1
+                metadata_width: 32
+                payload-word-bits: 32
+              - format: CP    # K1
+                metadata-word-bits: 32
+                payload-word-bits: 32
+              #### N0, K0
+              - format: CP    # N0
+                metadata-word-bits: 32
+                payload-word-bits: 32
+              - format: CP    # K0
+                metadata-word-bits: 32
+                payload-word-bits: 64
+
+          - name: Z
+            ranks:
+              - format: CP    # N2
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # M2
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # M1
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # N1
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # N0
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # M0
+                metadata-word-bits: 64
+                payload-word-bits: 64
+    - name: LLB
+      representation-format:
+        data-spaces:
+          - name: A
+          #### M1, K1
+            ranks:
+              - format: CP
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP
+                metadata-word-bits: 64
+                payload-word-bits: 0
+            #### M0, K0
+              - format: CP    # M0 --> PEB,  128 coordinates, CSF format
+                metadata-word-bits: 32
+                payload-word-bits: 32
+              - format: CP    # K0 --> PEB,  128 coordinates, points to data
+                metadata-word-bits: 32
+                payload-word-bits: 64
+
+          - name: B
+            ranks:
+            #### N1, K1
+              - format: CP    # N1
+                metadata_width: 32
+                payload-word-bits: 32
+              - format: CP    # K1
+                metadata-word-bits: 32
+                payload-word-bits: 32
+            #### N0, K0 (CSF)
+              - format: CP    # N0
+                metadata-word-bits: 32
+                payload-word-bits: 32
+              - format: CP    # K0
+                metadata-word-bits: 32
+                payload-word-bits: 64
+
+          - name: Z
+            ranks:
+              - format: CP    # M2
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # M1
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # N1
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # M0, N0
+                metadata-word-bits: 64
+                payload-word-bits: 64
+
+    - name: PEB
+      representation-format:
+        data-spaces:
+          - name: A
+            ranks:
+              - format: CP    # M0 --> PEB,  128 coordinates, CSF format
+                metadata-word-bits: 32
+                payload-word-bits: 32
+              - format: CP    # K0 --> PEB,  128 coordinates, points to data
+                metadata-word-bits: 32
+                payload-word-bits: 64
+          - name: B
+            ranks:
+              - format: CP    # N0
+                metadata-word-bits: 32
+                payload-word-bits: 32
+              - format: CP    # K0
+                metadata-word-bits: 32
+                payload-word-bits: 64
+          - name: Z
+            ranks:
+              - format: CP    # N1
+                metadata-word-bits: 0
+                payload-word-bits: 0
+              - format: CP    # M0, N0
+                metadata-word-bits: 64
+                payload-word-bits: 64
+
+      action-optimization:
+        - type: skipping
+          options:
+            - target: A
+              condition-on: [ B ]
+        - type: skipping
+          options:
+            - target: B
+              condition-on: [ A ]
+        - type: skipping
+          options:
+            - target: Z
+              condition-on: [ A, B ]

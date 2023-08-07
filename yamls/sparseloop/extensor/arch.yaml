@@ -1,0 +1,53 @@
+architecture:
+# ============================================================
+# Architecture Description
+# ============================================================
+  version: 0.3
+  subtree:
+    - name: System
+      attributes:
+        technology: 40nm
+        byte: 8
+      local: #components in this level
+        - name: MainMemory
+          class: DRAM       #class signifies this is a leaf node (component)
+          attributes:
+            width: 64
+            datawidth: 64   #4 bytes on each data access. also defines how many bits are in a word
+            shared_bandwidth: 8.53125 #17.0625 # 68.25GB/s, 1GHz clock, 68.25 bytes per cycle
+                            # BUT this is in terms of the words/cycle
+                            # we assume a word is 32 bits (see datawidth), so
+                            # we have 68.25/4 = 17.0625 words/cycle
+            metadata_storage_width: 128
+
+      subtree: #Internal node in parallel with local nodes
+        - name: MID_SDOP
+          local:
+            - name: LLB  #assume 30MB with extra storage (for now) for the metadata
+              class: SRAM #_metadata
+              attributes:
+                data_storage_depth: 3932160 # 30MB storage
+                data_storage_width: 64
+                datawidth: 64
+                shared_bandwidth: 256  #2048 bytes/cycle @ 1GHz, datawidth is 64/8 = 8 bytes. 2048/8 = 256 words/cycle
+                metadata_storage_width: 128
+                metadata_storage_depth: 22590656
+
+          subtree: #Internal node in parallel with local nodes
+            - name: BOT_SDOP[0..127]
+              local:
+                - name: PEB  #64KB, lets assume we have a register file for coords again
+                  class: SRAM #_metadata
+                  attributes:
+                    data_storage_depth: 49152    # 64kB/(8 bytes)
+                    data_storage_width: 64    # read and write
+                    datawidth: 64   # double precision values
+                    meshX: 128
+                    metadata_storage_width: 128
+                    metadata_storage_depth: 352960
+                - name: mac
+                  class: compute
+                  subclass: fpmac
+                  attributes:
+                    datawidth: 64
+                    meshX: 128

@@ -53,10 +53,6 @@ architecture:
             attributes:
               width: 4096 # Distribution network width: 128 * 32 bits
               depth: 256 # 128 * 128 PEs * 32 bits * 2 inputs / width
-          - name: Multiplier
-            class: Compute
-            attributes:
-              type: mul
 format:
   A:
     flattened:
@@ -112,6 +108,3 @@ bindings:
       type: payload
       evict-on: N
       style: eager
-  - component: Multiplier
-    bindings:
-    - op: mul

@@ -34,8 +34,11 @@
 venv/
 notebooks/tmp/*
 *.swp
+<<<<<<< Updated upstream
 
 #
 # Ignore user modified docker-compose.yaml
 #
 docker-compose.yaml
+data/generated/*
+notebooks/timeloop-model.accelergy.log

@@ -1,3 +1,0 @@
-scipy
-git+https://github.com/FPSG-UIUC/fibertree.git@metrics#egg=fiber-tree
-git+ssh://git@github.com/FPSG-UIUC/teaal-compiler.git@modeling#egg=teaal

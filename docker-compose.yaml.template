@@ -27,6 +27,7 @@ services:
     ports:
       - "8888:8888"
     volumes:
+      - ./data:/home/workspace/data
       - ./notebooks:/home/workspace/notebooks
       - ./scripts:/home/workspace/scripts
       - ./yamls:/home/workspace/yamls

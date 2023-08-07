@@ -1,0 +1,35 @@
+problem:
+  shape:
+    name: MatrixMultiply
+    dimensions: [ M, N, K ]
+    data-spaces:
+      - name: A
+        projection:
+          - [ [ M ] ]
+          - [ [ K ] ]
+
+      - name: B
+        projection:
+          - [ [ N ] ]
+          - [ [ K ] ]
+
+      - name: Z
+        projection:
+          - [ [ M ] ]
+          - [ [ N ] ]
+        read-write: True
+
+  instance:
+    M: 24576 # 23133 -- rounded up to nearest microtile size, use 181 microtiles
+    K: 24576 # 23133
+    N: 24576 # 23133
+    densities:
+      A:
+        distribution: hypergeometric
+        density: 0.0003493
+      B:
+        distribution: hypergeometric
+        density: 0.0003493
+      Z:
+        distribution: hypergeometric
+        density: 0.0044016

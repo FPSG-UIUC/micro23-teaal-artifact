@@ -6,7 +6,7 @@ from fibertree import Tensor
 
 
 def getSciPy(name):
-    loaded = sio.loadmat("tensors/" + name + ".mat")
+    loaded = sio.loadmat("tmp/tensors/" + name + ".mat")
 
     # Get the actual location of the matrix
     ind_0 = ["wiki-Vote-gp", "p2p-Gnutella31-gp", "ca-CondMat-gp",
@@ -42,8 +42,6 @@ def convert(name):
     for i, j, v in zip(coo.row, coo.col, coo.data):
         a_ref = a_m.getPayloadRef(i, j)
         a_ref += v
-
-    print("Loaded", name)
 
     return A_MK
 
