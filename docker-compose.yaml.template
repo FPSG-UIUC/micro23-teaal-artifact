@@ -1,0 +1,36 @@
+#
+# Docker-compose file for running TeAAL artifact
+#
+# Notes:
+#    The workspace will be owned by $USER_UID:$USER_GID
+#
+
+# Run as follows:
+#
+#    1) Copy `docker-compose.yaml.template` to `docker-compose.yaml`
+#    2) Edit `docker-compose.yaml`:
+#       - Change USER_UID and USER_GID to the desired owner of your files (echo $UID )
+#       - (Optional) Change host port
+#       - (Optional) Uncomment JUPYTER_SWITCHES line to disable authorization
+#    3) Run the following command:
+#       - `docker-compose up`
+#    4) Look at output and use the 127.0.0.1 URL (unless you changed the port below)
+#
+
+version: '3'
+
+services:
+  labs:
+    hostname: labs
+    image: timeloopaccelergy/timeloop-accelergy-pytorch:teaal-amd64
+    build: .
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/workspace/notebooks
+      - ./scripts:/home/workspace/scripts
+      - ./yamls:/home/workspace/yamls
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+#      - JUPYTER_SWITCHES=--LabApp.token=''

@@ -34,3 +34,8 @@
 venv/
 notebooks/tmp/*
 *.swp
+
+#
+# Ignore user modified docker-compose.yaml
+#
+docker-compose.yaml
