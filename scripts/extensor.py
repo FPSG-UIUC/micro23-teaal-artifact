@@ -204,13 +204,14 @@ def get_speedup(dfs, src, mat):
 
 def graph_speedup(pregenerated=False):
     dfs = {"Reported": pd.read_csv("../data/baselines/extensor.csv"),
-        "Sparseloop": pd.read_csv("../data/generated/sparseloop.csv"),
         "MKL": pd.read_csv("../data/baselines/mkl.csv")}
 
     if pregenerated:
         dfs["TeAAL"] = pd.read_csv("../data/pregenerated/extensor.csv")
+        dfs["Sparseloop"] = pd.read_csv("../data/pregenerated/sparseloop.csv")
     else:
         dfs["TeAAL"] = pd.read_csv("../data/generated/extensor.csv")
+        dfs["Sparseloop"] = pd.read_csv("../data/generated/sparseloop.csv")
 
     srcs = ["Reported", "TeAAL", "Sparseloop"]
     mats = ["wiki-Vote", "p2p-Gnutella31", "ca-CondMat", "poisson3Da",
