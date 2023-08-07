@@ -65,7 +65,7 @@ def eval():
 
     for mat in mats:
         A_MK = convert(mat + "-gp")
-        B_KN = copy.deepcopy(A_MK)
+        B_KN = convert(mat)
         B_KN.setRankIds(["K", "N"])
 
         metrics = run(A_MK, B_KN)
