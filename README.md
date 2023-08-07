@@ -35,7 +35,7 @@ Add the appropriate `USER_UID` and `USER_GID`.
 
 ### Step 2: Pull the docker image
 
-We provide two options for obtaining the docker image. Please choose one of the options listed below.
+We provide three options for obtaining the docker image. Please choose one of the options listed below.
 
 #### Option 1: Use `docker-compose`
 
@@ -45,10 +45,18 @@ docker-compose pull
 
 If this does nothing, proceed to Option 2.
 
-#### Option 2: Use `docker`
+#### Option 2: Use `docker pull`
 
 ```bash
 docker pull timeloopaccelergy/timeloop-accelergy-pytorch:teaal-amd64
+```
+
+#### Option 3: Build the image from source
+
+```bash
+git clone https://github.com/Accelergy-Project/timeloop-accelergy-pytorch.git
+git switch micro23-artifact-teaal
+make build-amd64
 ```
 
 ### Step 3: Start the container
