@@ -76,7 +76,7 @@ def write_data(mat, metrics, seed=0):
     B = metrics["T0"]["MainMemory"]["B"]["read"] // 8
     T = metrics["T1"]["MainMemory"]["T0"]["read"] // 8 + \
         metrics["T1"]["MainMemory"]["T1"]["write"] // 8
-    Z = metrics["Z"]["MainMemory"]["Z"]["write"]
+    Z = metrics["Z"]["MainMemory"]["Z"]["write"] // 8
 
     # Bandwidth: 128 GB/s * 2^30 B/GB * 10^-9 ns/s
     mem_time = (A + B + T + Z) / (128 * 2**30 * 10**-9)

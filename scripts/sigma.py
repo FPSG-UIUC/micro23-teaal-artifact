@@ -87,7 +87,6 @@ def eval():
         data = [*mat, A, B, time, seed]
 
         with open("../data/generated/sigma.csv", "a") as f:
-            print(",".join(str(val) for val in data))
             f.write(",".join(str(val) for val in data) + "\n")
 
 
