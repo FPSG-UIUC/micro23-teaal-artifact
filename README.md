@@ -56,7 +56,7 @@ docker pull timeloopaccelergy/timeloop-accelergy-pytorch:teaal-amd64
 docker-compose up -d
 ```
 
-Navigate to `localhost:8888` or `<remote_ip>:8888` if using a remote machine within a web browser.
+Navigate to `localhost:8888` (or `<remote_ip>:8888` if using a remote machine) within a web browser.
 
 ### Step 4: Run the experiments
 
@@ -92,9 +92,10 @@ You can confirm that all imports are available by running a simple copy kernel a
 
 To confirm that all accelerator specifications are configured correctly, please execute `notebooks/simple-accel.ipynb`.
 
-If any accelerator tests return `False`, restore all specifications
+If any accelerator tests return `False`, restore all specifications.
 
 ```bash
+cd path/to/micro23-teaal-artifact/
 git restore yamls/
 ```
 
@@ -104,13 +105,6 @@ The described hardware resouces are *required* for these experiments. However, y
 
 To do so, navigate to `notebooks/figs8and9.ipynb` and after running the second Code cell, set the `pregenerated` widget to `True`. Execute the rest of the notebook, skipping cells beginning with `%%python3 -O`.
 
-# Old
-# micro23-teaal-artifact
-MICRO 2023 Evaluation Artifact for TeAAL
+## Acknowledgements
 
-
-- Copy `docker-compose.yaml.template` to `docker-compose.yaml`
-- Edit `docker-compose.yaml` to taste
-- Invoke `docker-compose up` (add `-d` to run in background)
-- Open web browser at `localhost:8888` (unless you changed the port)
-
+This README is based on the instructions for the [MICRO22 Sparseloop Artifact](https://github.com/Accelergy-Project/micro22-sparseloop-artifact/).
