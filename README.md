@@ -11,7 +11,8 @@ This repository provides the evaluation setups for the MICRO22 artifact evaluati
 
 ### Software Requirements
 
-- Please install [docker app](https://www.docker.com/products/docker-desktop/)
+- Web browser
+- [Docker](https://www.docker.com/products/docker-desktop/)
 
 ## Perform the Artifact Evaluation
 
