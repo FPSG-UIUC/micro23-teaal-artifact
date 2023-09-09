@@ -1,5 +1,7 @@
 # MICRO23 TeAAL Artifact
 
+[![DOI](https://zenodo.org/badge/673544660.svg)](https://zenodo.org/badge/latestdoi/673544660)
+
 This repository provides the evaluation setups for the MICRO22 artifact evaluation for the paper *TeAAL: A Declarative Framework for Modeling Sparse Tensor Accelerators*. We provide a docker environment and Jupyter notebook for the artifact evaluation.
 
 ## System Requirements
