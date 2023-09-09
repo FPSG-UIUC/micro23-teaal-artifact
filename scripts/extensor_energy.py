@@ -176,7 +176,7 @@ def eval(dataset="all"):
         B_KN.setRankIds(["K", "N"])
 
         metrics = run(A_KM, B_KN, *tile_sizes[mat])
-        run_accelergy(metrics, mat)
+        energy = run_accelergy(metrics, mat)
 
         with open("../data/generated/extensor-energy.csv", "a") as f:
             f.write(mat + "," + str(energy) + "\n")
