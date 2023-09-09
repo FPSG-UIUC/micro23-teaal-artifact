@@ -69,7 +69,7 @@ Navigate to `localhost:8888` (or `<remote_ip>:8888` if using a remote machine) w
 
 ### Step 4: Run the experiments
 
-Navigate to `notebooks/figs8and9.ipynb` and follow the instructions. The heading describe the graphs to compare.
+Navigate to `notebooks/figs8and9.ipynb` and follow the instructions to reproduce Figures 8 and 9. Navigate to `notebooks/fig10.ipynb` and follow the instructions to reproduce Figure 10. The heading describe the graphs to compare.
 
 ### Troubleshooting
 
