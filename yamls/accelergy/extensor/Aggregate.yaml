@@ -1,0 +1,74 @@
+compound_components: 
+  version: 0.3
+  classes:
+  - name: Aggregate 
+    attributes:
+      technology: technology
+      num_ranks:  num_ranks     #I, J, K
+      num_microtiles: num_microtiles
+       
+    subcomponents:
+      #Stores the maximum buffer size
+      - name: max_buf_size
+        class: reg
+        attributes:
+          technology: technology
+          datawidth: 32
+          latency: 1
+
+      #The current buffer size as we grow
+      #I would need to determine the # of times we grow a tile
+      - name: cur_buf_size
+        class: reg
+        attributes:
+          technology: technology
+          datawidth: 32
+          latency: 1
+      
+      #Accumulate tile growth to current buffer size
+      - name: growth_adder
+        class: intadder
+        attributes:
+          technology: technology
+          datawidth: 32
+          latency: 1
+
+      #Compare 
+      - name: tile_size_checker
+        class: comparator
+        attributes:
+          technology: technology 
+          datawidth: 32
+          latency: 0.5
+
+      - name: aat
+        class: Aggregate_Adder_Tree
+        attributes:
+          technology: technology
+          datawidth: 32
+          num_microtiles: num_microtiles
+          latency: 1
+
+    actions:
+      - name: aggregate_tiles
+        subcomponents:
+        - name: aat
+          actions:
+            - name: aggregate_add_tiles 
+        - name: cur_buf_size
+          actions:
+            - name: access
+        - name: growth_adder
+          actions:
+            - name: add
+        - name: tile_size_checker
+          actions:
+            - name: compare
+        - name: max_buf_size
+          actions:
+            - name: access
+        - name: cur_buf_size #We access this twice (1) read (2) update
+          actions:
+            - name: access
+
+        

@@ -1,0 +1,123 @@
+architecture:
+# ============================================================
+# Architecture Description
+# ============================================================
+  version: 0.3
+  subtree:
+    - name: extensor_v1_design
+      attributes:
+        technology: 40nm #TODO: ask Chris what the technology node should be; use the most recent
+        byte: 8
+      local: #components in this level
+        - name: main_memory
+          class: DRAM       #class signifies this is a leaf node (component)
+          attributes:       #TODO: check want we want to do for this
+              width: byte #64 * byte
+              type: LPDDR4 #HBM2, LPDDR4
+
+      subtree: #Internal node in parallel with local nodes
+        - name: TOP_SDOP
+          attributes:
+            data_width: 64
+            metadata_width: 32
+          local:
+            - name: sequencer
+              class: Sequencer
+              attributes:
+                num_ranks:  3      #I, J, K
+
+        - name: MID_SDOP
+          attributes:
+            # NDN: data_width -> datawidth
+            data_width: 64
+            metadata_width: 32
+          local:
+            - name: LLB
+              class: SRAM
+              attributes:
+                width: 512*8 #check with Hadi 16*8
+                depth: 15360 #16 for the segment array, 512 for the col indices array, 512 for the nnz pointer array. Each SRAM row holds 64 bits, or 2 integers.
+                n_rd_ports: 2         #Or 1? since we index with posA and output comes out with dataA
+                n_wr_ports: 2
+                n_banks: 4
+                latency: 0.5
+                #- name: LLB
+                #class: shared_SRAM                    #I think we need this because we have 3 llb requesters: output handler(read and write), aggregate(read), metadatabuild(write)
+                #attributes:
+                #nbanks: 4
+                #bank_depth: 15360     # 30 MB/8 bytes
+                #bank_width: 512*8     # 512 bytes by 4 banks
+                #n_rd_ports: 2  # number of architectural read ports
+                #n_wr_ports: 2  # number of architectural write ports
+                #n_bank_rd_ports: 1
+                #n_bank_wr_ports: 1
+                #latency: 0.5
+                #
+            - name: midCoordinator
+              class: MidCoordinator
+              attributes:
+                num_ranks:  3      #I, J, K
+                cfiParallelFactor: 0
+
+      #       - name: rr_distributor
+      #         class: counter
+      #         attributes:
+      #           width: 7 #log(128)
+
+      #       # TODO: might not be needed just involve reads and writes between DRAM and LLB
+      #       #- name: output_handler
+      #         # This will just be replaced with reads and writes to the DRAM and the LLB
+      #         # and perhaps a note on the # of accumulations
+
+      #       # Important: Might need to add in more ports to the SRAM
+
+            # ## Set the wire length here
+            # - name: mid_bot_NoC
+            #   class: XY_NoC
+            #   attributes:
+            #     datawidth: 64
+            #     n_PE_rows: 1
+            #     n_PE_cols: 128
+            #     X_comparator_width: 128
+            #     Y_comparator_width: 0
+            #     Y_X_wire_avg_length: 0.725mm
+
+        - name: BOT_SDOP[0..127]
+          attributes:
+            nnz_size:  16384      #microtiles are 128x128 for TeAAL, not 32x32 as for tactile
+            datawidth: 64        #Everything is double precision, 64 (TACTile and ExTensor)
+
+          local:
+      #       #Covered in the coordinator...
+      #       #- name: A_buf
+      #       #  class: SRAM
+      #       #  attributes:
+      #       #      width: 64    #The local PE buffer contains space for 32 microtiles - 32 rows of microtiles, 32x32 microtiles -- 2^10 by 32 bits for col indices, and 2^10 by 32 bits for microtile pointer addresses)
+      #       #      depth: 16 + 512 + 512 #16 for the segment array, 512 for the col indices array, 512 for the nnz pointer array. Each SRAM row holds 64 bits, or 2 integers.
+      #      # - name: out_buf
+      #      #   class: SRAM
+      #      #   attributes:
+      #      #     width: 64
+      #      #     depth: 2048 #32*32 scalars each with 2 32-bit metadata units. That's one row for metadata, one row for value
+      #             ## Not needed for TACTile, send per scalar to output handler(LLB)
+
+            #- name: interCoordinator
+            #  class: Coordinator
+            #  attributes:
+            #     technology: technology
+            - name: intraCoordinator
+              class: Coordinator
+              attributes:
+                cfiParallelFactor: 0
+
+            - name: mac
+              class: fpmac
+              attributes:
+                datawidth: 64
+
+
+      #     #TODO:
+      #     # 1. Action: mac_ops per PE (or just in action counts yaml file)
+      #     # 2. Action: Writes to the output buffer...
+      #     # 3. Tile Extractor logic...
+      #     # 4. Map out the actions I need to keep track of for script.

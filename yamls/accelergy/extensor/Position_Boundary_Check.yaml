@@ -1,0 +1,91 @@
+compound_components: 
+  version: 0.3
+  classes:
+  - name: Position_Boundary_Check
+    attributes:
+      technology: technology
+      datawidth: datawidth
+
+    subcomponents:
+    #The current microtile coordinate
+      - name: tile_crd
+        class: reg
+        attributes:
+          technology: technology
+          datawidth: datawidth
+
+      - name: tile_size
+        class: reg
+        attributes:
+          technology: technology
+          datawidth: datawidth          
+    
+    #Sent by the sequencer, the upper bound on this coordinate
+      - name: upper_crd_bound
+        class: reg
+        attributes: 
+          technology: technology
+          datawidth: datawidth
+
+      #Sent by the sequencer, the lower bound on this coordinate
+      - name: lower_crd_bound
+        class: reg
+        attributes: 
+          technology: technology
+          datawidth: datawidth          
+
+      # Check the tile coordinates against the upper and lower bounds
+      - name: upper_bound_checker
+        class: comparator
+        attributes: 
+          technology: technology
+          datawidth: datawidth
+          latency: 1
+    
+      - name: lower_bound_checker
+        class: comparator
+        attributes:
+          technology: technology
+          datawidth: datawidth
+          latency: 1
+
+      - name: cmp_mux
+        class: multiplexer #come back to this, might need to hand-implement it
+        attributes:
+          technology: technology
+          datawidth: datawidth
+          latency: 1
+      
+    actions:
+    - name: load_tile
+      subcomponents:
+        - name: tile_crd
+          actions:
+          - name: access
+
+        - name: tile_size
+          actions:
+          - name: access
+
+        - name: upper_crd_bound
+          actions:
+          - name: access
+
+        - name: lower_crd_bound
+          actions:
+          - name: access
+
+        - name: upper_bound_checker
+          actions:
+          - name: compare
+          
+        - name: lower_bound_checker
+          actions:
+          - name: compare              
+
+        - name: cmp_mux
+          actions:
+          - name: select
+
+
+  

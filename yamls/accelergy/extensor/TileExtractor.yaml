@@ -1,0 +1,60 @@
+compound_components: 
+  version: 0.3
+  classes:
+  - name: TileExtractor 
+    attributes:
+      technology: 40nm
+      num_ranks:  num_ranks      #I, J, K
+      num_microtiles: num_microtiles
+       
+
+    subcomponents:
+     #This is going through the loop nest
+      - name: sequencer
+        class: Sequencer
+        attributes:
+          technology: technology       
+
+      - name: aggregate
+        class: Aggregate
+        attributes:
+          technology: technology
+          num_ranks: num_ranks
+          num_microtiles: num_microtiles
+
+      - name: md_build
+        class: Metadata_Build
+        attributes:
+          technology: technology
+          num_ranks: num_ranks
+          num_microtiles: num_microtiles
+
+    actions:
+      #our loop nest in tactile will tell us how to update this.
+    - name: iterate_m
+      subcomponents:
+        - name: sequencer.loop_cntr[0]
+          actions:
+          - name: count
+
+    - name: iterate_k
+      subcomponents:
+        - name: sequencer.loop_cntr[1]
+          actions:
+          - name: count
+
+    - name: iterate_n
+      subcomponents:
+        - name: sequencer.loop_cntr[2]
+          actions:
+          - name: count
+
+          #Aggregate and build
+    - name: build
+      subcomponents:
+        - name: aggregate
+          actions: 
+          - name: aggregate_tiles
+        - name: md_build
+          actions: 
+          - name: update_macrotile

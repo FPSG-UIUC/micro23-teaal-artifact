@@ -1,0 +1,28 @@
+compound_components: 
+  version: 0.3
+  classes:
+  - name: Metadata_Build 
+    attributes:
+      technology: technology
+      num_ranks:  num_ranks      #I, J, K
+      num_microtiles: num_microtile
+
+        #MD_build simply has storage for row, col, and val pointers
+        #it just adds to these and grows the row segment array
+    subcomponents:
+        #It writes to the LLB, so action counts will be from the global file
+    - name: incrementor
+      class: counter
+      attributes:
+        technology: technology
+        width: 32
+        latency: 0.5
+
+    actions:
+    - name: update_macrotile
+      subcomponents:
+        - name: incrementor
+          actions: 
+          - name: count # The rest is covered by reads and writes to LLB
+        
+

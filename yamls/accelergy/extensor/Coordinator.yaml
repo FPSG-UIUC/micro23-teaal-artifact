@@ -1,0 +1,132 @@
+compound_components:
+  version: 0.3 #I don't know what this does or if it means anything
+  classes:
+   - name: Coordinator #TACTile's Coordinator
+     attributes:
+      technology: 40nm
+      cfiParallelFactor: 1 
+
+     subcomponents:
+      - name: sequencer
+        class: Sequencer
+        attributes:
+          technology: technology
+            
+
+      - name: scannerA
+        class: Scanner
+        attributes:
+          technology: technology
+
+      - name: scannerB
+        class: Scanner
+        attributes:
+          technology: technology
+
+      - name: intersector #Does the CAM appear here or in the scanner -- the scanner
+        class: Intersect
+        attributes:
+          technology: technology
+
+          #Assume the N CFI intersections are now queued, we access storage 1 by 1
+      - name: dataStorageA  #Should this replace A_buf in the upper level? seems to be a duplicate
+        class: SRAM
+        attributes:
+          technology: technology
+          width: 64     #Assume we split it half and half
+          depth: 2048*2 #32768 bytes used in simulator    16 for the segment array, 512 for the col indices array, 512 for the nnz pointer array. Each SRAM row holds 64 bits, or 2 32-bit integers.
+          n_rd_ports: 1         #Or 1? since we index with posA and output comes out with dataA
+          n_wr_ports: 1
+          n_banks: 1
+          latency: 0.5
+
+
+      - name: dataStorageB  #Should this replace A_buf in the upper level? seems to be a duplicate
+        class: SRAM
+        attributes:
+          technology: technology
+          width: 64 #32 + 32 + 64 bits for coords and data value (approximation)
+          depth: 2048*2 #16 for the segment array, 512 for the col indices array, 512 for the nnz pointer array. Each SRAM row holds 64 bits, or 2 integers.
+          n_rd_ports: 1         #Or 1? since we index with posA and output comes out with dataA
+          n_wr_ports: 1
+          n_banks: 1
+          latency: 0.5
+
+          #What is TCA and TCB?? we don't need it for the TACTile coordinator, but we will for DynoTen
+          #- name: TCA
+          #  class: SRAM?
+          #  <TODO>
+
+          #- name: TCB
+          #  class: SRAM?
+          #  <TODO>
+
+     actions:
+     #This is hard-coded, unfortunately...
+     - name: iterate_m
+       subcomponents:
+       - name: sequencer.loop_cntr[0]
+         actions:
+           - name: count
+
+     - name: iterate_k
+       subcomponents:
+       - name: sequencer.loop_cntr[1]
+         actions:
+           - name: count
+
+     - name: iterate_n
+       subcomponents:
+       - name: sequencer.loop_cntr[2]
+         actions:
+           - name: count          
+
+      #successful intersects mean
+      # (1) an intersect occurred 
+      # (2) we output a coordinate and a stream
+      # (3) we index data storage and output data storage 
+     - name: success_intersect        
+           #Coordinates matched, output it
+       subcomponents:
+       - name: intersector
+         actions:
+         - name: success_intersect #We don't need to consider parallelism b/c the total energy parallel is the same as a series of sequential intersects. We need parallelism for area only.
+       - name: dataStorageA
+         actions:
+         - name: read
+       - name: dataStorageB
+         actions:
+         - name: read
+
+     - name: try_intersect        
+            #Coordinates matched, output it
+       subcomponents:
+       - name: intersector
+         actions:
+         - name: try_intersect #We don't need to consider parallelism b/c the total energy parallel is the same as a series of sequential intersects. We need parallelism for area only.
+       - name: dataStorageA
+         actions:
+         - name: read #Am I over counting the reads? technically it's only reading metadata, and only on success does it read data
+       - name: dataStorageB
+         actions:
+         - name: read
+       - name: scannerA
+         actions: 
+         - name: skipTo
+       - name: scannerA
+         actions: 
+         - name: readCoord
+       - name: scannerA
+         actions: 
+         - name: iterate
+       - name: scannerB
+         actions: 
+         - name: skipTo
+       - name: scannerB
+         actions: 
+         - name: readCoord
+       - name: scannerB
+         actions: 
+         - name: iterate
+              
+

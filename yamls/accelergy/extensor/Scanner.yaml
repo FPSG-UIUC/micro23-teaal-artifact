@@ -1,0 +1,119 @@
+##TODO: check that I actually double-buffered the registers!
+
+compound_components: 
+  version: 0.3
+  classes:
+  - name: Scanner
+    attributes:
+      technology: technology
+      memory_width: 32
+      memory_depth: 2048 # microtiles have 32*32 scalars, each with 2 coordinate points
+      n_rd_ports: 2  #2 read ports since we're double buffering
+      n_wr_ports: 1 #(1) Fill path, (2) read request
+      T_size: 32 #What is our comparator size - 32-CAM
+      datawidth: 64
+
+    subcomponents:
+      #- name: T_CAM
+      #  attributes: 
+      #    technology: technology
+      #    datawidth: 32  #this could be smaller though
+      #    scoord_range: T_size - 1
+      - name: scoord_reg #The argument to skipTo() from the other scanner
+        class: reg
+        attributes:
+          technology: technology
+          datawidth: 8 #we can do 8 bits, see ExTensor paper under energy and area
+          latency: 1
+
+      - name: coord_reg[0..31] #The current stream
+        class: reg
+        attributes:
+          technology: technology
+          datawidth: 8
+          latency: 1
+
+      - name: addr_reg[0..31] #The current stream
+        class: reg
+        attributes:
+          technology: technology
+          datawidth: 32
+          latency: 1
+
+      - name: coord_comparator[0..31]   #Is this a per-bit comparator? (inclusive -- includes scoord_range)
+        class: comparator
+        attributes:
+          technology: technology
+          datawidth: 8
+          latency: 0.5
+
+      #We don't need this since it's part of the datastorage
+      #- name: md_storage
+      #  class: SRAM
+      #  attributes:
+      #    technology: technology
+      #    width: memory_width
+      #    depth: memory_depth   #16 for the segment array, 512 for the col indices array, 512 for the nnz pointer array. Each SRAM row holds 64 bits, or 2 integers.
+      #    n_rd_ports: n_rd_ports         #Or 1? since we index with posA and output comes out with dataA
+      #    n_wr_ports: n_wr_ports
+      #    n_banks: 1
+      #    latency: 0.5
+
+      - name: address_generator #How do we account for the array of addresses? Is that a separate storage mechanism?
+        class: counter #We access every time there's a read request
+        attributes:
+          technology: technology
+          width: log(memory_depth) #to acceess the metadata
+          latency: 0.5
+
+
+    actions: 
+    #We've received a skipTo command. Do a comparison on scoord to the current stream and get the address we need, 
+    - name: skipTo #We've received a skipTo command. See skipModelFiber function in TACTile simulator
+      subcomponents:
+        - name: coord_comparator[0..31]
+          actions:
+          - name: compare
+        - name: scoord_reg
+          actions:
+          - name: access
+
+        # Will metadata reads only happen on SkipTos? 
+    - name: read_coord
+      subcomponents:
+        - name: md_storage
+          actions: 
+          - name: read
+        - name: address_generator
+          actions:
+            - name: count
+
+      #Advance the header + coordinates in coordinate registers.
+    - name: iterate ## This is called every time we iterate through a non-empty loop nest, also includes skipTO calls when they successfully output a coordinate
+      #Do we need an access here?
+      subcomponents:
+        - name: coord_reg[0..31]
+          actions:
+          - name: access
+        - name: addr_reg[0..31]
+          actions:
+          - name: access
+
+
+
+
+
+#what is the scoreboard depth in the Accelergy buffet_collection_SRAM? -- check with Nellie? 
+# I don't need it, scoreboard is the same as storage depth, records which entry in storage is being updated.
+#Wher is the "mux" coming from in the test directory?
+# Download Aladdin plugin
+# Double check with Nellie what the DRAM width size is - in bits or in bytes? -- in bits
+# What parts would I need to integrate with CACTI?
+# I don't need anything, just check the ReadME in the cacti-plug-in
+# Is there a way we can wrap the entire Coordinate with the number of "intersects" that happen?
+# What exactly are the deltas? Maybe walk through an example? Does that mean I have to keep track of all the address deltas in my simulation?
+# Yes I would, but not needed for TACTile
+
+
+# Scanner -- compares stream of coordinates from both tensors, and outputs coordinates to be intersected
+# Intersect just checks the values of the two coordinates, and if they are equl, outputs a new subtensor

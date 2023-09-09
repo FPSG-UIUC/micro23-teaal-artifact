@@ -1,0 +1,53 @@
+compound_components: 
+  version: 0.3
+  classes:
+  - name: multiplexer 
+    attributes:
+      technology: technology
+      datawidth:  datawidth
+
+      #2 AND gates and one OR gate, bitwise of course
+
+    subcomponents: 
+      - name: AND_S0[0..datawidth-1]
+        class: bitwise
+        attributes:
+          technology: technology  
+          datawidth: 1
+          latency: 1
+      - name: AND_S1[0..datawidth-1]
+        class: bitwise
+        attributes:
+          technology: technology
+          datawidth: 1
+          latency: 1
+        
+      - name: OR[0..datawidth-1]
+        class: bitwise
+        attributes:
+          technology: technology
+          datawidth: 1
+          latency: 1
+      
+      - name: NOT[0..datawidth-1]
+        class: bitwise
+        attributes:
+          technology: technology
+          datawidth: 1
+          latency: 1
+
+    actions:
+    - name: select
+      subcomponents:
+        - name: AND_S0[0..datawidth-1]
+          actions:
+          - name: process
+        - name: AND_S1[0..datawidth-1]
+          actions:
+          - name: process
+        - name: OR[0..datawidth-1]
+          actions:
+          - name: process
+        - name: NOT[0..datawidth-1]
+          actions:
+          - name: process

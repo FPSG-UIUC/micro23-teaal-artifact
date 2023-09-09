@@ -1,0 +1,40 @@
+compound_components: 
+  version: 0.3
+  classes:
+  - name: Aggregate_Adder_Tree
+    attributes:
+      technology: 40nm
+      datawidth: 32
+      num_microtiles: 32
+      num_adders: num_microtiles - 1
+      adder_end: num_adders - 1
+
+
+    #Position boundary check unit
+    subcomponents:
+      - name: PBC[0..num_microtiles-1]
+        class: Position_Boundary_Check
+        attributes:
+          technology: technology
+          datawidth: datawidth
+          latency: 1
+
+      #The fancy adder tge. 
+      #1 + 2 + 4 + 8 + 16 + ... adders
+      - name: adder_tree[0..adder_end]
+        class: intadder
+        attributes:
+          technology: technology
+          datawidth: datawidth 
+          latency: 1
+
+
+    actions:
+      - name: aggregate_add_tiles
+        subcomponents:
+          - name: PBC[0..num_microtiles-1]
+            actions:
+              - name: load_tile 
+          - name: adder_tree[0..adder_end]
+            actions:
+              - name: add 

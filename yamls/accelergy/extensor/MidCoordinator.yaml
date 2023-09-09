@@ -1,0 +1,88 @@
+compound_components:
+  version: 0.3 #I don't know what this does or if it means anything
+  classes:
+   - name: MidCoordinator #TACTile's Coordinator
+     attributes:
+      technology: 40nm
+      cfiParallelFactor: cfiParallelFactor
+
+     subcomponents:
+      - name: sequencer[0..cfiParallelFactor]
+        class: Sequencer
+        attributes:
+          technology: technology
+            
+
+      - name: scannerA[0..cfiParallelFactor]
+        class: Scanner
+        attributes:
+          technology: technology
+
+      - name: scannerB[0..cfiParallelFactor]
+        class: Scanner
+        attributes:
+          technology: technology
+
+      - name: intersector[0..cfiParallelFactor] #Does the CAM appear here or in the scanner -- the scanner
+        class: Intersect
+        attributes:
+          technology: technology
+
+     actions:
+     #This is hard-coded, unfortunately...
+      - name: iterate_m
+        subcomponents:
+          - name: sequencer[0].loop_cntr[0]
+            actions:
+              - name: count
+
+      - name: iterate_k
+        subcomponents:
+        - name: sequencer[0].loop_cntr[1]
+          actions:
+            - name: count
+
+      - name: iterate_n
+        subcomponents:
+        - name: sequencer[0].loop_cntr[2]
+          actions:
+            - name: count          
+
+      #successful intersects mean
+      # (1) an intersect occurred 
+      # (2) we output a coordinate and a stream
+      # (3) we index data storage and output data storage 
+      - name: success_intersect        
+            #Coordinates matched, output it
+        subcomponents:
+        - name: intersector[0]
+          actions:
+          - name: success_intersect #We don't need to consider parallelism b/c the total energy parallel is the same as a series of sequential intersects. We need parallelism for area only.
+
+
+      - name: try_intersect        
+            #Coordinates matched, output it
+        subcomponents:
+        - name: intersector[0]
+          actions:
+          - name: try_intersect #We don't need to consider parallelism b/c the total energy parallel is the same as a series of sequential intersects. We need parallelism for area only.
+        - name: scannerA[0]
+          actions: 
+          - name: skipTo
+        - name: scannerA[0]
+          actions: 
+          - name: readCoord
+        - name: scannerA[0]
+          actions: 
+          - name: iterate
+        - name: scannerB[0]
+          actions: 
+          - name: skipTo
+        - name: scannerB[0]
+          actions: 
+          - name: readCoord
+        - name: scannerB[0]
+          actions: 
+          - name: iterate
+              
+

@@ -1,0 +1,69 @@
+#Complete 
+
+compound_components: 
+  version: 0.3
+  classes:
+  - name: Sequencer 
+    attributes:
+      technology: technology
+      num_ranks:  3      #M, K, N
+      num_tensors: 2     #the # of input tensors. See section 6.1 of ExTensor paper.
+      
+
+  #These might be better as registers?
+    subcomponents:
+      - name: loop_bound[0..2]
+        class: reg 
+        attributes:
+              technology: technology
+              width: 32
+              #depth: num_ranks
+              #n_wr_ports: 1 #this will only happen once, at the start
+              #n_rd_ports: 1
+              latency: 0.5
+      - name: stride[0..2]
+        class: reg
+        attributes:
+            technology: technology
+            width: 32
+            #depth: num_ranks
+            #n_wr_ports: 1 # this will only happen once, at the start
+            #n_rd_ports: 1
+            latency: 0.5
+      - name: order[0..num_tensors][0..2]
+        class: reg
+        attributes:
+            technology: technology
+            width: 32
+            #depth: num_ranks
+            #n_wr_ports: 1 # this will only happen once, at the start
+            #n_rd_ports: 1
+            latency: 0.5
+
+      #We have a counter for each rank
+      - name: loop_cntr[0..num_ranks-1]
+        class: counter
+        attributes:
+            technology: technology
+            width: 32
+            latency: 0.5
+            
+    #Actions are called in the Coordinator.
+    actions:
+    - name: iterate_m
+      subcomponents:
+        - name: loop_cntr[0]
+          actions:
+          - name: count
+
+    - name: iterate_n
+      subcomponents:
+        - name: loop_cntr[1]
+          actions:
+          - name: count
+
+    - name: iterate_k
+      subcomponents:
+        - name: loop_cntr[2]
+          actions:
+          - name: count

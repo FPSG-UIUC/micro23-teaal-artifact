@@ -1,0 +1,62 @@
+compound_components: 
+  version: 0.3
+  classes:
+  - name: Intersect 
+    attributes:
+      technology: technology
+      num_ranks:  3      #I, J, K
+      datawidth: 32
+
+        #Not sure how to express this in Accelergy. Essentially just 2 registers and a comparator? and an output register?
+
+    subcomponents:
+      - name: A_reg
+        class: reg
+        attributes:
+          technology: technology
+          datawidth: datawidth
+          latency: 1
+      - name: B_reg
+        class: reg
+        attributes:
+          technology: technology
+          datawidth: datawidth
+          latency: 1
+      - name: C_reg
+        class: reg
+        attributes:
+          technology: technology
+          datawidth: datawidth*2 #We output (coordinate, position)
+          latency: 1
+
+      - name: comparator
+        class: comparator
+        attributes:
+          technology: technology
+          datawidth: datawidth
+          latency: 1
+
+    actions:
+      #Coordinates matched, output it
+    - name: success_intersect
+      subcomponents: 
+        - name: C_reg
+          actions:
+          - name: access
+      #Compare coordinates
+    - name: try_intersect
+      subcomponents:
+        - name: A_reg
+          actions: 
+          - name: access
+        - name: B_reg
+          actions:
+          - name: access
+        - name: comparator 
+          actions:
+          - name: compare
+
+        #In TACTile, "successful intersect" happens comp_nnz times (see matrix.cpp)
+        #Every other access to the A or B reg is an access and a comparison.
+
+
