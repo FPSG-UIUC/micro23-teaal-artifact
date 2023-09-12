@@ -20,6 +20,19 @@
 version: '3'
 
 services:
+  # Source: https://stackoverflow.com/questions/36249744/interactive-shell-using-docker-compose
+  cl:
+    image: timeloopaccelergy/timeloop-accelergy-pytorch:teaal-amd64
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    volumes:
+      - ./data:/home/workspace/data
+      - ./notebooks:/home/workspace/notebooks
+      - ./scripts:/home/workspace/scripts
+      - ./yamls:/home/workspace/yamls
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
   labs:
     hostname: labs
     image: timeloopaccelergy/timeloop-accelergy-pytorch:teaal-amd64
