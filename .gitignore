@@ -32,9 +32,8 @@
 **/profiles
 
 venv/
-notebooks/tmp/*
+*/tmp/*
 *.swp
-<<<<<<< Updated upstream
 
 #
 # Ignore user modified docker-compose.yaml
