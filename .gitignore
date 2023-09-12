@@ -40,4 +40,5 @@ venv/
 #
 docker-compose.yaml
 data/generated/*
+data/plots/*
 notebooks/timeloop-model.accelergy.log
