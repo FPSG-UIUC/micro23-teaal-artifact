@@ -1,7 +1,6 @@
 import os
 
 import pandas as pd
-from ruamel.yaml import YAML
 
 from fibertree import Metrics, Tensor
 from fibertree.model import Compute, Format, Traffic
@@ -17,6 +16,7 @@ from teaal.trans.hifiber import HiFiber
 from scripts.convert import convert
 from scripts.download import download
 import scripts.graph_utils as utils
+import scripts.yaml as yaml
 
 def run(A_KM, B_KN, M1, K1, N1, pe_sz):
     assert A_KM.getRankIds() == ["K", "M"]
@@ -140,7 +140,7 @@ def dump_counts(metrics, fn):
     counts["action_counts"]["local"] = local
     counts["action_counts"]["version"] = 0.3
 
-    dump_yaml(counts, fn)
+    yaml.dump(counts, fn)
 
 def eval(dataset="all"):
     if dataset == "all":
@@ -191,20 +191,9 @@ def run_accelergy(metrics, mat):
         "../yamls/accelergy/extensor/components/*yaml " + counts_fn + \
         " > /dev/null")
 
-    energy_dict = load_yaml(output + "energy_estimation.yaml")
+    energy_dict = yaml.load(output + "energy_estimation.yaml")
     return energy_dict["energy_estimation"]["Total"]
 
-
-def dump_yaml(data, fn):
-    yaml = YAML(typ='safe', pure=True)
-    with open(fn, "wb") as f:
-        yaml.dump(data, f)
-
-def load_yaml(fn):
-    yaml = YAML(typ='safe', pure=True)
-    with open(fn, 'r') as stream:
-        data_loaded = yaml.load(stream)
-    return data_loaded
 
 def get_energy(dfs, src, mat):
     opt_line = dfs[src].query("Matrix == @mat")
