@@ -40,7 +40,7 @@ def convert(name):
 
     a_m = A_MK.getRoot()
     for i, j, v in zip(coo.row, coo.col, coo.data):
-        a_ref = a_m.getPayloadRef(i, j)
+        a_ref = a_m.getPayloadRef(int(i), int(j))
         a_ref += v
 
     return A_MK
