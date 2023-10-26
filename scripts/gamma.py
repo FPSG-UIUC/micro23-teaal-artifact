@@ -47,6 +47,7 @@ def run(A_MK, B_KN):
 
 def check(metrics):
     corr = {'T': {'MainMemory': {'B': {'read': 2368}, 'A': {'read': 1600}}, 'Intersect': 14}, 'Z': {'MainMemory': {'Z': {'read': 0, 'write': 3456}}, 'HighRadixMerger': {'T_MKN': 60}, 'FPMul': {'mul': 46}, 'FPAdd': {'add': 13}}}
+    corr = {'T': {'MainMemory': {'B': {'read': 2368}, 'A': {'read': 1600}, 'time': 3.6088749766349792e-09}, 'Intersect': {'intersect': 14, 'time': 4.375e-10}}, 'Z': {'MainMemory': {'Z': {'read': 0, 'write': 3456}, 'time': 3.14321368932724e-09}, 'HighRadixMerger': {'T_MKN': 60, 'time': 1.875e-09}, 'FPMul': {'mul': 46, 'time': 1.4375e-09}, 'FPAdd': {'add': 13, 'time': 4.0625e-10}}, 'blocks': [['T', 'Z']], 'time': 6.752088665962219e-09}
 
     print("Expected metrics:", metrics == corr)
 
@@ -74,15 +75,7 @@ def eval():
         B = metrics["T"]["MainMemory"]["B"]["read"] // 8
         Z = metrics["Z"]["MainMemory"]["Z"]["write"] // 8
 
-        # Bandwidth: 128 GB/s * 2^30 B/GB * 10^-9 s/ns
-        mem_time = (A + B + Z) / (128 * 2**30 * 10**-9)
-
-        # Compute Ceiling: 32 ops/cycle * 1 gigacycles/s * 10^9 cycles/gigcycle * 10^-9 s/ns
-        compute_time = max(metrics["T"]["Intersect"],
-            metrics["Z"]["FPMul"]["mul"],
-            metrics["Z"]["FPAdd"]["add"],
-            metrics["Z"]["HighRadixMerger"]["T_MKN"]) / (32 * 1 * 10**9 * 10**-9)
-        time = max(mem_time, compute_time)
+        time = metrics["time"]
 
         df = pd.read_csv("../data/pregenerated/gamma.csv")
         i = df.query("Matrix == @mat").index[0]

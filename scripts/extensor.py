@@ -46,7 +46,7 @@ def run(A_KM, B_KN, M1, K1, N1, pe_sz):
     return locals()["metrics"]
 
 def check(metrics):
-    corr = {'Z': {'MainMemory': {'A': {'read': 7296}, 'B': {'read': 6464}, 'Z': {'read': 2560, 'write': 6912}}, 'FPMul': {'mul': 46}, 'FPAdd': {'add': 13}, 'K2Intersect': 4, 'K1Intersect': 39, 'K0Intersect': 84}}
+    corr = {'Z': {'MainMemory': {'A': {'read': 7296}, 'B': {'read': 6464}, 'Z': {'read': 2560, 'write': 6912}, 'time': 3.962378042488987e-08}, 'FPMul': {'mul': 46, 'time': 3.59375e-10}, 'FPAdd': {'add': 13, 'time': 1.015625e-10}, 'K2Intersect': {'intersect': 4, 'time': 4e-09}, 'K1Intersect': {'intersect': 39, 'time': 3.9e-08}, 'K0Intersect': {'intersect': 84, 'time': 6.5625e-10}}, 'blocks': [['Z']], 'time': 3.962378042488987e-08}
 
     print("Expected metrics:", metrics == corr)
 
@@ -84,23 +84,14 @@ def eval():
         Z = Z_write - Z_read
         PO = Z_read * 2
 
-        # Bandwidth: 68.256 GB/s * 2^30 B/GB * 10^-9 s/ns
-        mem_time = (A + B + PO + Z) / (68.256 * 2**30) * 10**9
-
-        # Compute Ceiling: 128 ops/cycle * 1 gigacycles/s * 10^9 cycles/gigcycle * 10^-9 s/ns
-        compute_time = max(metrics["Z"]["FPMul"]["mul"],
-            metrics["Z"]["FPAdd"]["add"],
-            metrics["Z"]["K2Intersect"],
-            metrics["Z"]["K1Intersect"],
-            metrics["Z"]["K0Intersect"]) / (128 * 10**9 * 10**-9)
-        time = max(mem_time, compute_time)
+        time = metrics["time"]
 
         df = pd.read_csv("../data/pregenerated/extensor.csv")
         i = df.query("Matrix == @mat").index[0]
         min_traffic = df.at[i, "Minimum Traffic"]
 
         data = [mat, A, B, PO, Z, metrics["Z"]["FPMul"]["mul"],
-                metrics["Z"]["FPAdd"]["add"], metrics["Z"]["K0Intersect"],
+                metrics["Z"]["FPAdd"]["add"], metrics["Z"]["K0Intersect"]["intersect"],
                 min_traffic, time]
 
         with open("../data/generated/extensor.csv", "a") as f:

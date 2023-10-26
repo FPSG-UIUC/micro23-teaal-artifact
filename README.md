@@ -9,7 +9,7 @@ This repository provides the evaluation setups for the MICRO22 artifact evaluati
 ### Hardware Requirements
 
 - Memory: 256 GB
-- Storage: 75 GB
+- Storage: 125 GB
 
 ### Software Requirements
 
@@ -17,6 +17,13 @@ This repository provides the evaluation setups for the MICRO22 artifact evaluati
 - [Docker](https://www.docker.com/products/docker-desktop/)
 
 ## Perform the Artifact Evaluation
+
+There are two options for performing the artifact evaluation:
+
+1. Use the MLCommons CM Automation Language (see [here](https://github.com/ctuning/cm-reproduce-research-projects/tree/main/script/reproduce-ieee-acm-micro2023-paper-8))
+2. In a JupyterLab (see below)
+
+The latter is recommended for finer-grain control of which figures you would like to reproduce.
 
 ### Step 0: Clone the repository
 
@@ -92,7 +99,7 @@ pip install git+https://github.com/FPSG-UIUC/fibertree.git@metrics#egg=fiber-tre
 `teaal` can be installed with:
 
 ```bash
-pip install git+https://github.com/FPSG-UIUC/teaal-compiler.git@modeling#egg=teaal
+pip install git+https://github.com/FPSG-UIUC/teaal-compiler.git#egg=teaal
 ```
 
 Once an import is installed, you must restart the notebook's kernel to make it visible.

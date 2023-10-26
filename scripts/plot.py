@@ -14,24 +14,24 @@ def main(pregenerated):
         os.makedirs(plot_dir)
 
     fig = extensor.graph_mem(pregenerated=pregenerated)
-    fig.savefig(plot_dir + "fig8a.pdf", bbox_inches='tight')
+    fig.savefig(plot_dir + "fig9a.pdf", bbox_inches='tight')
     fig = gamma.graph_mem(pregenerated=pregenerated)
-    fig.savefig(plot_dir + "fig8b.pdf", bbox_inches='tight')
+    fig.savefig(plot_dir + "fig9b.pdf", bbox_inches='tight')
     fig = outerspace.graph_mem(pregenerated=pregenerated)
-    fig.savefig(plot_dir + "fig8c.pdf", bbox_inches='tight')
+    fig.savefig(plot_dir + "fig9c.pdf", bbox_inches='tight')
 
 
     fig = extensor.graph_speedup(pregenerated=pregenerated)
-    fig.savefig(plot_dir + "fig9a.pdf", bbox_inches='tight')
+    fig.savefig(plot_dir + "fig10a.pdf", bbox_inches='tight')
     fig = gamma.graph_speedup(pregenerated=pregenerated)
-    fig.savefig(plot_dir + "fig9b.pdf", bbox_inches='tight')
+    fig.savefig(plot_dir + "fig10b.pdf", bbox_inches='tight')
     fig = outerspace.graph_time(pregenerated=pregenerated)
-    fig.savefig(plot_dir + "fig9c.pdf", bbox_inches='tight')
+    fig.savefig(plot_dir + "fig10c.pdf", bbox_inches='tight')
     fig = sigma.graph_speedup(pregenerated=pregenerated)
-    fig.savefig(plot_dir + "fig9d.pdf", bbox_inches='tight')
+    fig.savefig(plot_dir + "fig10d.pdf", bbox_inches='tight')
 
     fig = extensor_energy.graph_energy(pregenerated=pregenerated)
-    fig.savefig(plot_dir + "fig10.pdf", bbox_inches='tight')
+    fig.savefig(plot_dir + "fig11.pdf", bbox_inches='tight')
 
 if __name__ == "__main__":
     if sys.argv[1] == "pregenerated":

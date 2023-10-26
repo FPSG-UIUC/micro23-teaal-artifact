@@ -47,7 +47,7 @@ def run(A_KM, B_KN, M1, K1, N1, pe_sz):
     return locals()["metrics"]
 
 def check(metrics):
-    corr_metrics = {'Z': {'MainMemory': {'A': {'read': 7296}, 'B': {'read': 6464}, 'Z': {'read': 2560, 'write': 6912}}, 'LLB': {'A': {'read': 10560}, 'B': {'read': 12352}, 'Z': {'read': 2560, 'write': 6912}}, 'FPMul': {'mul': 46}, 'FPAdd': {'add': 13}, 'K2Intersect': 4, 'K1Intersect': 39, 'K0Intersection': 84, 'iter': {'N2': 2, 'K2': 4, 'M2': 8, 'M1': 12, 'N1': 24, 'K1': 35, 'M0': 46, 'N0': 70, 'K0': 46}}}
+    corr_metrics = {'Z': {'MainMemory': {'A': {'read': 7296}, 'B': {'read': 6464}, 'Z': {'read': 2560, 'write': 6912}, 'time': 3.962378042488987e-08}, 'LLB': {'A': {'read': 10560}, 'B': {'read': 12352}, 'Z': {'read': 2560, 'write': 6912}, 'time': 3.5110803153770576e-15}, 'FPMul': {'mul': 46, 'time': 3.59375e-10}, 'FPAdd': {'add': 13, 'time': 1.015625e-10}, 'K2Intersect': {'intersect': 4, 'time': 4e-09}, 'K1Intersect': {'intersect': 39, 'time': 3.9e-08}, 'K0Intersection': {'intersect': 84, 'time': 6.5625e-10}, 'TopSequencer': {'N2': 2, 'K2': 4, 'M2': 8, 'time': 1.4e-08}, 'MiddleSequencer': {'M1': 12, 'N1': 24, 'K1': 35, 'time': 7.1e-08}, 'BottomSequencer': {'M0': 46, 'N0': 70, 'K0': 46, 'time': 1.265625e-09}}, 'blocks': [['Z']], 'time': 7.1e-08}
 
     print("Expected metrics:", metrics == corr_metrics)
 
@@ -78,25 +78,25 @@ def dump_counts(metrics, fn):
            "action_counts": llb_counts}
     local.append(llb)
 
-    top_counts = [{"counts": metrics["Z"]["iter"]["N2"],
+    top_counts = [{"counts": metrics["Z"]["TopSequencer"]["N2"],
                    "name": "iterate_n"},
-                   {"counts": metrics["Z"]["iter"]["K2"],
+                   {"counts": metrics["Z"]["TopSequencer"]["K2"],
                     "name": "iterate_k"},
-                   {"counts": metrics["Z"]["iter"]["M2"],
+                   {"counts": metrics["Z"]["TopSequencer"]["M2"],
                     "name": "iterate_m"}]
     top = {"name": "extensor_v1_design.TOP_SDOP.sequencer",
            "action_counts": top_counts}
     local.append(top)
 
-    mid_counts = [{"counts": metrics["Z"]["iter"]["M1"],
+    mid_counts = [{"counts": metrics["Z"]["MiddleSequencer"]["M1"],
                    "name": "iterate_m"},
-                  {"counts": metrics["Z"]["iter"]["N1"],
+                  {"counts": metrics["Z"]["MiddleSequencer"]["N1"],
                    "name": "iterate_n"},
-                  {"counts": metrics["Z"]["iter"]["K1"],
+                  {"counts": metrics["Z"]["MiddleSequencer"]["K1"],
                    "name": "iterate_k"},
-                  {"counts": metrics["Z"]["K1Intersect"],
+                  {"counts": metrics["Z"]["K1Intersect"]["intersect"],
                    "name": "try_intersect"},
-                  {"counts": metrics["Z"]["iter"]["K1"],
+                  {"counts": metrics["Z"]["MiddleSequencer"]["K1"],
                    "name": "success_intersect"}]
     mid = {"name": "extensor_v1_design.MID_SDOP.midCoordinator",
            "action_counts": mid_counts}
@@ -108,15 +108,15 @@ def dump_counts(metrics, fn):
            "action_counts": mac_counts}
     local.append(mac)
 
-    bot_counts = [{"counts": metrics["Z"]["iter"]["M0"],
+    bot_counts = [{"counts": metrics["Z"]["BottomSequencer"]["M0"],
                    "name": "iterate_m"},
-                  {"counts": metrics["Z"]["iter"]["N0"],
+                  {"counts": metrics["Z"]["BottomSequencer"]["N0"],
                    "name": "iterate_n"},
-                  {"counts": metrics["Z"]["iter"]["K0"],
+                  {"counts": metrics["Z"]["BottomSequencer"]["K0"],
                    "name": "iterate_k"},
-                  {"counts": metrics["Z"]["K0Intersection"],
+                  {"counts": metrics["Z"]["K0Intersection"]["intersect"],
                    "name": "try_intersect"},
-                  {"counts": metrics["Z"]["iter"]["K0"],
+                  {"counts": metrics["Z"]["BottomSequencer"]["K0"],
                    "name": "success_intersect"}]
     bot = {"name": "extensor_v1_design.BOT_SDOP[0].intraCoordinator",
            "action_counts": bot_counts}

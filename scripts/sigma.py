@@ -46,7 +46,7 @@ def run(A_KM, B_KN):
     return locals()["metrics"]
 
 def check(metrics):
-    corr = {'Z': {'DataSRAMBanks': {'A': {'read': 4096}, 'B': {'read': 28672}}}}
+    corr = {'Z': {'DataSRAMBanks': {'A': {'read': 4096}, 'B': {'read': 28672}, 'time': 3.973642985026042e-09}}, 'blocks': [['Z']], 'time': 3.973642985026042e-09}
 
     print("Expected metrics:", metrics == corr)
 
@@ -81,8 +81,7 @@ def eval():
         A = metrics["Z"]["DataSRAMBanks"]["A"]["read"] // 8
         B = metrics["Z"]["DataSRAMBanks"]["B"]["read"] // 8
 
-        # Bandwidth: (4B / value * 128 values / cycle) * (10^9 cycles/s) * (10^-9 s/ns)
-        time = (A + B) / (4 * 128 * 10**9 * 10**-9)
+        time = metrics["time"]
 
         data = [*mat, A, B, time, seed]
 

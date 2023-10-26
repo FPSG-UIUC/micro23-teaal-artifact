@@ -44,7 +44,7 @@ def run(A_KM, B_KN):
     return locals()["metrics"]
 
 def check(metrics):
-    corr = {'T0': {'MainMemory': {'B': {'read': 2368}, 'A': {'read': 1664}}, 'FPMul': {'mul': 46}}, 'T1': {'MainMemory': {'T0': {'read': 5184}, 'T1': {'read': 0, 'write': 5184}}}, 'Z': {'MainMemory': {'Z': {'read': 0, 'write': 3456}}, 'SortHW': {'T1_MKN': 71}, 'FPAdd': {'add': 13}}}
+    corr = {'T0': {'MainMemory': {'B': {'read': 2368}, 'A': {'read': 1664}, 'time': 3.6670826375484467e-09}, 'FPMul': {'mul': 46, 'time': 1.19325551232166e-10}}, 'T1': {'MainMemory': {'T0': {'read': 5184}, 'T1': {'read': 0, 'write': 5184}, 'time': 9.42964106798172e-09}}, 'Z': {'MainMemory': {'Z': {'read': 0, 'write': 3456}, 'time': 3.14321368932724e-09}, 'SortHW': {'T1_MKN': 71, 'time': 3.669250645994832e-10}, 'FPAdd': {'add': 13, 'time': 6.718346253229974e-11}}, 'blocks': [['T0'], ['T1', 'Z']], 'time': 1.6239937394857407e-08}
 
     print("Expected metrics:", metrics == corr)
 
@@ -78,14 +78,7 @@ def write_data(mat, metrics, seed=0):
         metrics["T1"]["MainMemory"]["T1"]["write"] // 8
     Z = metrics["Z"]["MainMemory"]["Z"]["write"] // 8
 
-    # Bandwidth: 128 GB/s * 2^30 B/GB * 10^-9 ns/s
-    mem_time = (A + B + T + Z) / (128 * 2**30 * 10**-9)
-
-    # Compute Ceiling: # PEs ops/cycle * 1.5 gigacycles/s * 10^9 cycles/gigcycle * 10^-9 s/ns
-    compute_time = metrics["T0"]["FPMul"]["mul"] / (256 * 1.5 * 10**9 * 10**-9) + \
-        max(metrics["Z"]["FPAdd"]["add"],
-            metrics["Z"]["SortHW"]["T1_MKN"]) / (128 * 1.5 * 10**9 * 10**-9)
-    time = max(mem_time, compute_time)
+    time = metrics["time"]
 
     df = pd.read_csv("../data/pregenerated/outerspace.csv")
     i = df.query("Matrix == @mat").index[0]
